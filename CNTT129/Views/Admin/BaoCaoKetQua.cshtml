@@ -1,0 +1,151 @@
+﻿@{
+    ViewBag.Title = "BaoCaoKetQua";
+    Layout = "~/Views/Shared/_Layout_Admin.cshtml";
+}
+@using CNTT129.Models;
+@{
+    KHOA khoa = new KHOA();
+    var menu_khoa = khoa.find("", "", "0");
+    HOCKY hocky = new HOCKY();
+    var menu_hocky = hocky.find2();
+
+}
+<div class="row mt-2">
+    <div class="card w-100">
+        <div class="card-body">
+            <h6 style="text-transform:uppercase">Danh sách điểm rèn luyện</h6>
+            <hr />
+            <div style="margin-left:10px;margin-bottom:10px">
+                <div class="w-100 mt-1">
+                    <div class="row">
+                        <div class="col-md-1 col-lg-1 col-xl-1 col-sm-1">
+                            <label>Khoa</label><br />
+                        </div>
+                        <div class="col-md-2 col-lg-2 col-xl-2 col-sm-2">
+                            <select class="form-select" style="height:35px;width:100%" onchange="changeLoai()" id="khoa">
+                                <option value="0" @{var selected_khoa = ""; if (ViewBag.selected_khoa == "") { selected_khoa = "selected = 'selected'"; }} @selected_khoa>Tất cả</option>
+                                @{
+                                    foreach (var item in menu_khoa)
+                                    {
+                                        <option value="@item.ID_KHOA" @{selected_khoa = ""; if (ViewBag.selected_khoa == item.ID_KHOA) { selected_khoa = "selected = 'selected'"; }} @selected_khoa>@item.TEN_KHOA</option>
+                                    }
+                                }
+                            </select>
+                        </div>
+                        <div class="col-md-1 col-lg-1 col-xl-1 col-sm-1">
+                            <label>Lớp</label><br />
+                        </div>
+                        <div class="col-md-2 col-lg-2 col-xl-2 col-sm-2" id="tb_khoa">
+                            <select class="form-select" style="height:35px;width:100%" id="lop" disabled="disabled">
+                                <option value="">Tất cả</option>
+                            </select>
+                        </div>
+                        <div class="col-md-1 col-lg-1 col-xl-1 col-sm-1">
+                            <label>Học kỳ</label><br />
+                        </div>
+                        <div class="col-md-2 col-lg-2 col-xl-2 col-sm-2">
+                            <select class="form-select" style="height:35px;width:100%" id="hoc_ky">
+                                @{
+                                    <option value="0" @{var selected_hk = ""; if (ViewBag.selected_hocky == "") { selected_hk = "selected = 'selected'"; }} @selected_hk>Tất cả</option>
+                                    foreach (var item in menu_hocky)
+                                    {
+                                        <option value="@item.IDHK" @{selected_hk = ""; if (ViewBag.selected_hocky == item.IDHK) { selected_hk = "selected = 'selected'"; }} @selected_hk>@item.TENHK</option>
+                                    }
+                                }
+                            </select>
+                        </div>
+                        <div class="col-md-1 col-lg-1 col-xl-1 col-sm-1">
+                            <button type="button" class="btn btn-success" onclick="find()">Lọc</button>
+                        </div>
+                        <div class="col-md-1 col-lg-1 col-xl-1 col-sm-1">
+                            <button type="button" class="btn btn-success" onclick="printFn()">In</button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <hr />
+            <div id="list_sv" style="display:none">
+                <div class="container text-center">
+                    <span style="font-weight:1000">DANH SÁCH ĐIỂM RÈN LUYỀN SINH VIÊN</span> <br />
+                    <span id="span_khoa"></span> <br />
+                    <span id="span_lop"></span><br />
+                    <span id="span_hk"></span><br />
+                </div>
+                <div class="mt-2">
+                    <table class="table table-bordered">
+                        <thead>
+                            <tr>
+                                <td>STT</td>
+                                <td>Mã</td>
+                                <td>Tên sinh viên</td>
+                                <td>Khoa</td>
+                                <td>Lớp</td>
+                                <td>Học kỳ</td>
+                                <td>Điểm</td>
+                                <td>Xếp loại</td>
+                            </tr>
+                        </thead>
+                        <tbody id="tb_list_sv">
+                            
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+<script type="text/javascript">
+    function changeLoai() {
+        var khoa = document.getElementById("khoa").value;
+        if (khoa == "0") {
+            document.getElementById("lop").disabled = true;
+            $("#lop").val("").change();
+        } else {
+            document.getElementById("lop").disabled = false;
+            $.ajax({
+                url: '/Admin/ChangeKhoa',
+                data: { khoa: khoa },
+                type: 'POST',
+                success: function (data) {
+                    $("#tb_khoa").html(data);
+                }
+            });
+        }
+    }
+    function find() {
+        document.getElementById("list_sv").style.display = "block";
+        var khoa = document.getElementById("khoa").value;
+        var lop = document.getElementById("lop").value;
+        var hoc_ky = document.getElementById("hoc_ky").value;
+
+        if (khoa == "0") {
+            $("#span_khoa").text("Khoa: Tất cả");
+        } else {
+            $("#span_khoa").text("Khoa: " + $("#khoa option:selected").text());
+        }
+
+        if (lop != "") {
+            $("#span_lop").text("Lớp: " + $("#lop option:selected").text());
+        } else {
+            document.getElementById("span_lop").style.display = "none";
+        }
+
+        if (hoc_ky != "") {
+            $("#span_hk").text("Học kỳ: " + $("#hoc_ky option:selected").text());
+        } else {
+            document.getElementById("span_hk").style.display = "none";
+        }
+
+        $.ajax({
+            url: '/Admin/findReport',
+            data: { khoa: khoa, lop: lop, hoc_ky: hoc_ky },
+            type: 'POST',
+            success: function (data) {
+                $("#tb_list_sv").html(data);
+            }
+        });
+    }
+    function printFn() {
+        printDiv("#list_sv");
+    }
+</script>

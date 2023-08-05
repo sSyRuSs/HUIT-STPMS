@@ -1,0 +1,58 @@
+﻿@{
+    ViewBag.Title = "tb_hoat_dong";
+}
+@using CNTT129.Models;
+@{
+    if (ViewData["data_list_sv"] != null)
+    {
+        var i = 1;
+        foreach (var item in ViewData["data_list_sv"] as List<KETQUA>)
+        {
+            <tr>
+                <td>@i</td>
+                <td>@item.MASV</td>
+                <td>@item.TENSV</td>
+                <td>@item.TEN_KHOA</td>
+                <td>@item.CODE_LOP</td>
+                <td>@item.CODE_HK</td>
+                <td>@item.DIEM</td>
+                <td>
+                    @{
+            if (int.Parse(item.DIEM) < 35)
+            {
+                <span>Kém</span>
+            }
+            else if (int.Parse(item.DIEM) < 50)
+            {
+                <span>Yếu</span>
+            }
+            else if (int.Parse(item.DIEM) < 65)
+            {
+                <span>Trung bình</span>
+            }
+            else if (int.Parse(item.DIEM) < 80)
+            {
+                <span>Khá</span>
+            }
+            else if (int.Parse(item.DIEM) < 90)
+            {
+                <span>Tốt</span>
+            }
+            else
+            {
+                <span>Xuất sắc</span>
+            }
+                    }
+                </td>
+            </tr>
+            i++;
+        }
+    }
+    else
+    {
+        <tr>
+            <td colspan="8">Không có dữ liệu</td>
+        </tr>
+    }
+
+}

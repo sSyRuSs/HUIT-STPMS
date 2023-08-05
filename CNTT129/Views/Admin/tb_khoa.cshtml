@@ -1,0 +1,16 @@
+﻿@{
+    ViewBag.Title = "tb_hoat_dong";
+}
+@using CNTT129.Models;
+<select class="form-select" style="height:35px;width:100%" id="lop">
+    <option value="">Tất cả</option>
+    @{
+        if (ViewData["data_list"] != null)
+        {
+            foreach (var item in ViewData["data_list"] as List<LOP>)
+            {
+                <option value="@item.ID_LOP">@item.CODE_LOP - @item.TEN_LOP</option>
+            }
+        }
+    }
+</select>

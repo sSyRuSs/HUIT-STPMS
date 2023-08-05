@@ -1,0 +1,6 @@
+﻿@{
+    ViewBag.Title = "ShowMaQR";
+    Layout = "~/Views/Shared/_Layout_Admin.cshtml";
+}
+<p>@Session["link_qr"]</p>
+<img src="@Session["ma_qr"]" />
